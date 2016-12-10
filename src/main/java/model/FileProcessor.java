@@ -140,35 +140,59 @@ public class FileProcessor {
                         }
                         mcDone = true;
                     } else {
-                        throw new NumberFormatException("No matching multiple choice answer code found.");
+                        throw new NumberFormatException("No matching multiple choice answer code found in question #" + (i+1));
                     }
                 } else if (trueFalse) {
-                    if (code.contains("*")) {
-                        if (rest.toUpperCase().equals("TRUE") && !tfDone) {
+                    if (rest.toUpperCase().equals("TRUE") && !tfDone) {
+                        if (code.contains("*")) {
                             correctTrueFalse[0] = "Correct";
-                        } else if (rest.toUpperCase().equals("FALSE") && !tfDone) {
-                            correctTrueFalse[0] = "Correct";
-                            tfDone = true;
-                        } else {
-                            throw new NumberFormatException("No matching true false answer code found.");
                         }
+                    } else if (rest.toUpperCase().equals("FALSE") && !tfDone) {
+                        if (code.contains("*")) {
+                            correctTrueFalse[1] = "Correct";
+                        }
+                        tfDone = true;
+                    } else {
+                        throw new NumberFormatException("No matching true false answer code found in question #" + (i+1));
                     }
                 } else {
-                    throw new NumberFormatException("No matching question code found.");
+                    throw new NumberFormatException("No matching question code found for question #" + (i+1));
                 }
                 if (mcDone) {
-                    returnArray[i] += (fdh.getMc3() + fdh.getMcra3() + correctMultChoice[0] + fdh.getMcra4()
-                        + fdh.getMcrb3() + correctMultChoice[1] + fdh.getMcrb4() + fdh.getMcrc3()
-                        + correctMultChoice[2] + fdh.getMcrc4() + fdh.getMcrd3() + correctMultChoice[3]
-                        + fdh.getMcrd4() + fdh.getMc4());
+                    if (checkResponseArray(correctMultChoice)) {
+                        returnArray[i] += (fdh.getMc3() + fdh.getMcra3() + correctMultChoice[0] + fdh.getMcra4()
+                                + fdh.getMcrb3() + correctMultChoice[1] + fdh.getMcrb4() + fdh.getMcrc3()
+                                + correctMultChoice[2] + fdh.getMcrc4() + fdh.getMcrd3() + correctMultChoice[3]
+                                + fdh.getMcrd4() + fdh.getMc4());
+                    } else {
+                        throw new NumberFormatException("No correct answer provided for question #" + (i+1));
+                    }
                 }
                 if (tfDone) {
-                    returnArray[i] += (fdh.getTfrt1() + correctTrueFalse[0] + fdh.getTfrt2()
-                        + fdh.getTfrf1() + correctTrueFalse[0] + fdh.getTfrt2());
+                    if (checkResponseArray(correctTrueFalse)) {
+                        returnArray[i] += (fdh.getTfrt1() + correctTrueFalse[0] + fdh.getTfrt2()
+                                + fdh.getTfrf1() + correctTrueFalse[1] + fdh.getTfrf2());
+                    } else {
+                        throw new NumberFormatException("No correct answer provided for question #" + (i+1));
+                    }
                 }
             }
         }
         return returnArray;
+    }
+
+    /**
+     * Checks to see if the response array has been changed
+     * @param arr the array to check
+     * @return a boolean telling if the array has been changed
+     */
+    private boolean checkResponseArray(String[] arr) {
+        for (String str : arr) {
+            if (str.toUpperCase().equals("CORRECT")) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
