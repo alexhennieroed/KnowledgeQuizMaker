@@ -14,7 +14,8 @@ public class FileDataHolder {
           + mcrb2 + mcrc1 + responseC + mcrc2 + mcrd1 + responseD + mcrd2 + mc3 + mcra3
           + AisCorrect + mcra4 + mcrb3 + BisCorrect + mcrb4 + mcrc3 + CisCorrect + mcrc4
           + mcrd3 + DisCorrect + mcrd4 + mc4
-      TF Question: tf1 + question + tf2
+      TF Question: tf1 + question + tf2 + tfrt1 + TrueIsAnswer + tfrt2 + tfrf1
+          + FalseIsAnswer + tfrf2
       ES Question: es1 + question + es2
       Ending: end
 
@@ -544,7 +545,10 @@ public class FileDataHolder {
             "      </selection>\n" +
             "     <order order_type=\"Sequential\"></order>\n" +
             "  </selection_ordering>\n";
-    //Question string variables
+
+    /*
+     * Question string variables
+     */
     private final String mc1 = "<item ident=\"590865\" title=\"Multiple Choice\">\n" +
             "  <duration></duration>\n" +
             "  <itemmetadata>\n" +
@@ -1002,8 +1006,8 @@ public class FileDataHolder {
             "\t\t\t</response_lid>\n" +
             "\t\t</flow>\n" +
             "\t</presentation>\n" +
-            "\t<resprocessing>\n" +
-            "\t\t<outcomes>\n" +
+            "\t<resprocessing>\n";
+            private final String tfrt1 = "\t\t<outcomes>\n" +
             "\t\t\t<decvar defaultval=\"0\" maxvalue=\"4.0\" minvalue=\"0.0\" varname=\"SCORE\" vartype=\"Integer\"></decvar>\n" +
             "\t\t</outcomes>\n" +
             "\t\t<respcondition continue=\"No\" title=\"Correct\">\n" +
@@ -1011,9 +1015,11 @@ public class FileDataHolder {
             "\t\t\t\t<varequal case=\"Yes\" respident=\"TF02\">A</varequal>\n" +
             "\t\t\t</conditionvar>\n" +
             "\t\t\t<setvar action=\"Add\" varname=\"SCORE\">0</setvar>\n" +
-            "\t\t\t<displayfeedback feedbacktype=\"Response\" linkrefid=\"Correct\"></displayfeedback>\n" +
-            "\t\t</respcondition>\n" +
-            "\t\t<respcondition continue=\"No\" title=\"InCorrect\">\n" +
+            "\t\t\t<displayfeedback feedbacktype=\"Response\" linkrefid=\"";
+            private final String tfrt2 = "\"></displayfeedback>\n" +
+            "\t\t</respcondition>\n";
+            private final String tfrf1 = "\t\t<respcondition continue=\"No\" title=\"";
+            private final String tfrf2 = "\">\n" +
             "\t\t\t<conditionvar>\n" +
             "\t\t\t\t<varequal case=\"Yes\" respident=\"TF02\">B</varequal>\n" +
             "\t\t\t</conditionvar>\n" +
@@ -1215,6 +1221,14 @@ public class FileDataHolder {
     public String getTf1() { return tf1; }
 
     public String getTf2() { return tf2; }
+
+    public String getTfrt1() { return tfrt1; }
+
+    public String getTfrt2() { return tfrt2; }
+
+    public String getTfrf1() { return tfrf1; }
+
+    public String getTfrf2() { return tfrf2; }
 
     public String getEs1() { return es1; }
 

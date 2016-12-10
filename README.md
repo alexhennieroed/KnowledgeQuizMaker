@@ -15,6 +15,9 @@ A header with the quiz name, start date, and end date. It ends with a tilde.
 A body of questions with the typecode and responses, if necessary; if there are responses, the correct one is denoted by an asterisk.
 Questions are separated by a tilde.
 
+Multiple choice question responses must me in alphabetic order from a to d.
+True False question responses must be in the order of true then false.
+
 Typecodes are as follows:
 MC - Multiple Choice,
 TF - True False,

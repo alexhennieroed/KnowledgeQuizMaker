@@ -82,6 +82,7 @@ public class FileProcessor {
     private String[] convertData(String[] data)
             throws NumberFormatException {
         String[] correctMultChoice = {"Incorrect", "Incorrect", "Incorrect", "Incorrect"};
+        String[] correctTrueFalse = {"Incorrect", "Incorrect"};
         String[][] returnData = new String[data.length - 1][5];
         String[] returnArray = new String[returnData.length - 1];
         //Get the name and date data
@@ -98,6 +99,7 @@ public class FileProcessor {
             boolean multChoice = false;
             boolean mcDone = false;
             boolean trueFalse = false;
+            boolean tfDone = false;
             for (String s : returnData[i]) {
                 String[] splitIn = s.split(". ");
                 String code = splitIn[0];
@@ -114,22 +116,22 @@ public class FileProcessor {
                     returnArray[i] = fdh.getEs1() + splitIn[1] + fdh.getEs2();
                 } else if (multChoice) {
                     //It's a response, so check which one it is
-                    if (code.toUpperCase().contains("A")) {
+                    if (code.toUpperCase().contains("A") && !mcDone) {
                         returnArray[i] += fdh.getMcra1() + splitIn[1] + fdh.getMcra2();
                         if (code.contains("*")) {
                             correctMultChoice[0] = "Correct";
                         }
-                    } else if (code.toUpperCase().contains("B")) {
+                    } else if (code.toUpperCase().contains("B") && !mcDone) {
                         returnArray[i] += fdh.getMcrb1() + splitIn[1] + fdh.getMcrb2();
                         if (code.contains("*")) {
                             correctMultChoice[1] = "Correct";
                         }
-                    } else if (code.toUpperCase().contains("C")) {
+                    } else if (code.toUpperCase().contains("C") && !mcDone) {
                         returnArray[i] += fdh.getMcrc1() + splitIn[1] + fdh.getMcrc2();
                         if (code.contains("*")) {
                             correctMultChoice[2] = "Correct";
                         }
-                    } else if (code.toUpperCase().contains("D")) {
+                    } else if (code.toUpperCase().contains("D") && !mcDone) {
                         returnArray[i] += fdh.getMcrd1() + splitIn[1] + fdh.getMcrd2();
                         if (code.contains("*")) {
                             correctMultChoice[3] = "Correct";
@@ -139,8 +141,16 @@ public class FileProcessor {
                         throw new NumberFormatException("No matching multiple choice answer code found.");
                     }
                 } else if (trueFalse) {
-                    //It can be ignored
-                    trueFalse = true;
+                    if (code.contains("*")) {
+                        if (splitIn[1].toUpperCase().equals("TRUE") && !tfDone) {
+                            correctTrueFalse[0] = "Correct";
+                        } else if (splitIn[1].toUpperCase().equals("FALSE") && !tfDone) {
+                            correctTrueFalse[0] = "Correct";
+                            tfDone = true;
+                        } else {
+                            throw new NumberFormatException("No matching true false answer code found.");
+                        }
+                    }
                 } else {
                     throw new NumberFormatException("No matching question code found.");
                 }
@@ -149,6 +159,10 @@ public class FileProcessor {
                         + fdh.getMcrb3() + correctMultChoice[1] + fdh.getMcrb4() + fdh.getMcrc3()
                         + correctMultChoice[2] + fdh.getMcrc4() + fdh.getMcrd3() + correctMultChoice[3]
                         + fdh.getMcrd4() + fdh.getMc4());
+                }
+                if (tfDone) {
+                    returnArray[i] += (fdh.getTfrt1() + correctTrueFalse[0] + fdh.getTfrt2()
+                        + fdh.getTfrf1() + correctTrueFalse[0] + fdh.getTfrt2());
                 }
             }
         }
