@@ -100,42 +100,41 @@ public class FileProcessor {
             boolean mcDone = false;
             boolean trueFalse = false;
             boolean tfDone = false;
-            boolean esDone = false;
             //Do checks of the codes
             for (String s : returnData[i]) {
-                String[] splitIn = s.split(". ");
-                String code = splitIn[0];
+                int index = s.indexOf(". ");
+                String code = s.substring(0, index + 2);
+                String rest = s.substring(index + 2);
                 if (code.toUpperCase().contains("MC")) {
                     //Multiple Choice
                     multChoice = true;
-                    returnArray[i] = fdh.getMc1() + splitIn[1] + fdh.getMc2();
+                    returnArray[i] = fdh.getMc1() + rest + fdh.getMc2();
                 } else if (code.toUpperCase().contains("TF")) {
                     //True False
                     trueFalse = true;
-                    returnArray[i] = fdh.getTf1() + splitIn[1] + fdh.getTf2();
+                    returnArray[i] = fdh.getTf1() + rest + fdh.getTf2();
                 } else if (code.toUpperCase().contains("ES")) {
                     //Essay
-                    returnArray[i] = fdh.getEs1() + splitIn[1] + fdh.getEs2();
-                    esDone = true;
+                    returnArray[i] = fdh.getEs1() + rest + fdh.getEs2();
                 } else if (multChoice) {
                     //It's a response, so check which one it is
                     if (code.toUpperCase().contains("A") && !mcDone) {
-                        returnArray[i] += fdh.getMcra1() + splitIn[1] + fdh.getMcra2();
+                        returnArray[i] += fdh.getMcra1() + rest + fdh.getMcra2();
                         if (code.contains("*")) {
                             correctMultChoice[0] = "Correct";
                         }
                     } else if (code.toUpperCase().contains("B") && !mcDone) {
-                        returnArray[i] += fdh.getMcrb1() + splitIn[1] + fdh.getMcrb2();
+                        returnArray[i] += fdh.getMcrb1() + rest + fdh.getMcrb2();
                         if (code.contains("*")) {
                             correctMultChoice[1] = "Correct";
                         }
                     } else if (code.toUpperCase().contains("C") && !mcDone) {
-                        returnArray[i] += fdh.getMcrc1() + splitIn[1] + fdh.getMcrc2();
+                        returnArray[i] += fdh.getMcrc1() + rest + fdh.getMcrc2();
                         if (code.contains("*")) {
                             correctMultChoice[2] = "Correct";
                         }
                     } else if (code.toUpperCase().contains("D") && !mcDone) {
-                        returnArray[i] += fdh.getMcrd1() + splitIn[1] + fdh.getMcrd2();
+                        returnArray[i] += fdh.getMcrd1() + rest + fdh.getMcrd2();
                         if (code.contains("*")) {
                             correctMultChoice[3] = "Correct";
                         }
@@ -145,9 +144,9 @@ public class FileProcessor {
                     }
                 } else if (trueFalse) {
                     if (code.contains("*")) {
-                        if (splitIn[1].toUpperCase().equals("TRUE") && !tfDone) {
+                        if (rest.toUpperCase().equals("TRUE") && !tfDone) {
                             correctTrueFalse[0] = "Correct";
-                        } else if (splitIn[1].toUpperCase().equals("FALSE") && !tfDone) {
+                        } else if (rest.toUpperCase().equals("FALSE") && !tfDone) {
                             correctTrueFalse[0] = "Correct";
                             tfDone = true;
                         } else {
@@ -166,9 +165,6 @@ public class FileProcessor {
                 if (tfDone) {
                     returnArray[i] += (fdh.getTfrt1() + correctTrueFalse[0] + fdh.getTfrt2()
                         + fdh.getTfrf1() + correctTrueFalse[0] + fdh.getTfrt2());
-                }
-                if (esDone) {
-                    break;
                 }
             }
         }

@@ -64,11 +64,6 @@ public class MainScreenController extends Controller {
             loadLabel.setText(loadLabel.getText() + " " + oldFile.getName());
             convertButton.setDisable(false);
         } catch (Exception e) {
-            //Debugging print
-            System.out.println("***DEBUGGING***");
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-            //Debugging print
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "There was an error while loading the file.\n"
                 + "Please try again.");
             alert.showAndWait()
@@ -104,11 +99,6 @@ public class MainScreenController extends Controller {
                 loadLabel.setText("Loaded file:\n");
             }
         } catch (Exception e) {
-            //Debugging print
-            System.out.println("***DEBUGGING***");
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-            //Debuggin print
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "There was an error while converting the file.\n"
                     + "Please try again.");
             alert.showAndWait()
@@ -147,11 +137,6 @@ public class MainScreenController extends Controller {
                 loadLabel.setText("Loaded file:\n");
             }
         }  catch (Exception e) {
-            //Debugging print
-            System.out.println("***DEBUGGING***");
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-            //Debugging print
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "There was an unknown error while packing the file.\n"
                     + "Please try again.");
             alert.showAndWait()
