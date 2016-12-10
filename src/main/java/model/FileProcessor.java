@@ -84,22 +84,24 @@ public class FileProcessor {
         String[] correctMultChoice = {"Incorrect", "Incorrect", "Incorrect", "Incorrect"};
         String[] correctTrueFalse = {"Incorrect", "Incorrect"};
         String[][] returnData = new String[data.length - 1][5];
-        String[] returnArray = new String[returnData.length - 1];
+        String[] returnArray = new String[returnData.length];
         //Get the name and date data
         String[] splitHeader = data[0].split(System.getProperty("line.separator"));
         name = splitHeader[0];
         startDate = splitHeader[1] + "T160000-0400";
         endDate = splitHeader[2] + "T201500-0400";
         //Put the rest of the strings into a 2D array for easy access
-        for (int i = 1; i < data.length - 1; i++) {
+        for (int i = 1; i < data.length; i++) {
             returnData[i - 1] = data[i].split(System.getProperty("line.separator"));
         }
         //Convert the strings to XML
-        for (int i = 0; i < returnData.length - 1; i++) {
+        for (int i = 0; i < returnData.length; i++) {
             boolean multChoice = false;
             boolean mcDone = false;
             boolean trueFalse = false;
             boolean tfDone = false;
+            boolean esDone = false;
+            //Do checks of the codes
             for (String s : returnData[i]) {
                 String[] splitIn = s.split(". ");
                 String code = splitIn[0];
@@ -114,6 +116,7 @@ public class FileProcessor {
                 } else if (code.toUpperCase().contains("ES")) {
                     //Essay
                     returnArray[i] = fdh.getEs1() + splitIn[1] + fdh.getEs2();
+                    esDone = true;
                 } else if (multChoice) {
                     //It's a response, so check which one it is
                     if (code.toUpperCase().contains("A") && !mcDone) {
@@ -163,6 +166,9 @@ public class FileProcessor {
                 if (tfDone) {
                     returnArray[i] += (fdh.getTfrt1() + correctTrueFalse[0] + fdh.getTfrt2()
                         + fdh.getTfrf1() + correctTrueFalse[0] + fdh.getTfrt2());
+                }
+                if (esDone) {
+                    break;
                 }
             }
         }
