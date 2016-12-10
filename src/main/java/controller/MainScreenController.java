@@ -52,74 +52,95 @@ public class MainScreenController extends Controller {
 
     @FXML
     private void loadFile() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Choose the file to convert");
-        fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("Text Files", "*.txt"));
-        File selectedFile = fileChooser.showOpenDialog(mainApp.getStage());
-        if (selectedFile != null) {
-            oldFile = selectedFile;
+        try {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Choose the file to convert");
+            fileChooser.getExtensionFilters().addAll(
+                    new FileChooser.ExtensionFilter("Text Files", "*.txt"));
+            File selectedFile = fileChooser.showOpenDialog(mainApp.getStage());
+            if (selectedFile != null) {
+                oldFile = selectedFile;
+            }
+            loadLabel.setText(loadLabel.getText() + " " + oldFile.getName());
+            convertButton.setDisable(false);
+        } catch (Exception e) {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "There was an error while loading the file.\n"
+                + "Please try again.");
+            alert.showAndWait()
+                    .filter(response -> response == ButtonType.OK);
         }
-        loadLabel.setText(loadLabel.getText() + " " + oldFile.getName());
-        convertButton.setDisable(false);
     }
 
     @FXML
     private void convertFile() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Choose where to save the file");
-        fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("XML Files", "*.xml"));
-        File selectedFile = fileChooser.showSaveDialog(mainApp.getStage());
-        if (selectedFile != null) {
-            newFile = selectedFile;
-        }
-        if (mainApp.getProcessor().convertFile(oldFile, newFile)) {
-            convertLabel.setText(convertLabel.getText() + " " + newFile.getName());
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "File was successfully converted.");
-            alert.showAndWait()
-                    .filter(response -> response == ButtonType.OK);
+        try {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Choose where to save the file");
+            fileChooser.getExtensionFilters().addAll(
+                    new FileChooser.ExtensionFilter("XML Files", "*.xml"));
+            File selectedFile = fileChooser.showSaveDialog(mainApp.getStage());
+            if (selectedFile != null) {
+                newFile = selectedFile;
+            }
+            if (mainApp.getProcessor().convertFile(oldFile, newFile)) {
+                convertLabel.setText(convertLabel.getText() + " " + newFile.getName());
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "File was successfully converted.");
+                alert.showAndWait()
+                        .filter(response -> response == ButtonType.OK);
 
-            loadButton.setDisable(true);
-            convertButton.setDisable(true);
-            packButton.setDisable(false);
-        } else {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
-                    "Could not properly convert or save the file.\nPlease try again.");
+                loadButton.setDisable(true);
+                convertButton.setDisable(true);
+                packButton.setDisable(false);
+            } else {
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
+                        "Could not properly convert or save the file.\nPlease try again.");
+                alert.showAndWait()
+                        .filter(response -> response == ButtonType.OK);
+                loadLabel.setText("Loaded file:\n");
+            }
+        } catch (Exception e) {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "There was an error while converting the file.\n"
+                    + "Please try again.");
             alert.showAndWait()
                     .filter(response -> response == ButtonType.OK);
-            loadLabel.setText("Loaded file:\n");
         }
     }
 
     @FXML
     private void packFiles() {
-        File srcDir = null;
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
-                "Please put " + newFile.getName() + " and imsmanifest.xml "
-                + "into a folder with no other files, then click okay.");
-        alert.showAndWait()
-                .filter(response -> response == ButtonType.OK);
-        DirectoryChooser fileChooser = new DirectoryChooser();
-        fileChooser.setTitle("Choose the directory with the two files");
-        File selectedFile = fileChooser.showDialog(mainApp.getStage());
-        if (selectedFile != null) {
-            srcDir = selectedFile;
-        }
-        if (mainApp.getPacker().packToZip(srcDir)) {
-            Alert alertt = new Alert(Alert.AlertType.CONFIRMATION, "Files were successfully packed.\n"
-                    + "You can now close the program.");
-            alertt.showAndWait()
+        try {
+            File srcDir = null;
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
+                    "Please put " + newFile.getName() + " and imsmanifest.xml "
+                            + "into a folder with no other files, then click okay.");
+            alert.showAndWait()
                     .filter(response -> response == ButtonType.OK);
-            packButton.setDisable(true);
-        } else {
-            Alert alertt = new Alert(Alert.AlertType.CONFIRMATION,
-                    "Could not properly pack the files.\nPlease try again.\n" +
-                    "If the error was access denied, please move the folder " +
-                    "to a different location and try again.");
-            alertt.showAndWait()
+            DirectoryChooser fileChooser = new DirectoryChooser();
+            fileChooser.setTitle("Choose the directory with the two files");
+            File selectedFile = fileChooser.showDialog(mainApp.getStage());
+            if (selectedFile != null) {
+                srcDir = selectedFile;
+            }
+            if (mainApp.getPacker().packToZip(srcDir)) {
+                Alert alertt = new Alert(Alert.AlertType.CONFIRMATION, "Files were successfully packed.\n"
+                        + "You can now close the program.");
+                alertt.showAndWait()
+                        .filter(response -> response == ButtonType.OK);
+                packButton.setDisable(true);
+            } else {
+                Alert alertt = new Alert(Alert.AlertType.CONFIRMATION,
+                        "Could not properly pack the files.\nPlease try again.\n" +
+                                "If the error was access denied, please move the folder " +
+                                "to a different location and try again.");
+                alertt.showAndWait()
+                        .filter(response -> response == ButtonType.OK);
+                loadLabel.setText("Loaded file:\n");
+            }
+        }  catch (Exception e) {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "There was an unknown error while packing the file.\n"
+                    + "Please try again.");
+            alert.showAndWait()
                     .filter(response -> response == ButtonType.OK);
-            loadLabel.setText("Loaded file:\n");
         }
     }
 

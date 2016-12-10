@@ -82,77 +82,117 @@ public class FileProcessor {
     private String[] convertData(String[] data)
             throws NumberFormatException {
         String[] correctMultChoice = {"Incorrect", "Incorrect", "Incorrect", "Incorrect"};
+        String[] correctTrueFalse = {"Incorrect", "Incorrect"};
         String[][] returnData = new String[data.length - 1][5];
-        String[] returnArray = new String[returnData.length - 1];
+        String[] returnArray = new String[returnData.length];
         //Get the name and date data
         String[] splitHeader = data[0].split(System.getProperty("line.separator"));
         name = splitHeader[0];
         startDate = splitHeader[1] + "T160000-0400";
         endDate = splitHeader[2] + "T201500-0400";
         //Put the rest of the strings into a 2D array for easy access
-        for (int i = 1; i < data.length - 1; i++) {
+        for (int i = 1; i < data.length; i++) {
             returnData[i - 1] = data[i].split(System.getProperty("line.separator"));
         }
         //Convert the strings to XML
-        for (int i = 0; i < returnData.length - 1; i++) {
+        for (int i = 0; i < returnData.length; i++) {
             boolean multChoice = false;
             boolean mcDone = false;
             boolean trueFalse = false;
+            boolean tfDone = false;
+            //Do checks of the codes
             for (String s : returnData[i]) {
-                String[] splitIn = s.split(". ");
-                String code = splitIn[0];
+                int index = s.indexOf(". ");
+                String code = s.substring(0, index + 2);
+                String rest = s.substring(index + 2);
                 if (code.toUpperCase().contains("MC")) {
                     //Multiple Choice
                     multChoice = true;
-                    returnArray[i] = fdh.getMc1() + splitIn[1] + fdh.getMc2();
+                    returnArray[i] = fdh.getMc1() + rest + fdh.getMc2();
                 } else if (code.toUpperCase().contains("TF")) {
                     //True False
                     trueFalse = true;
-                    returnArray[i] = fdh.getTf1() + splitIn[1] + fdh.getTf2();
+                    returnArray[i] = fdh.getTf1() + rest + fdh.getTf2();
                 } else if (code.toUpperCase().contains("ES")) {
                     //Essay
-                    returnArray[i] = fdh.getEs1() + splitIn[1] + fdh.getEs2();
+                    returnArray[i] = fdh.getEs1() + rest + fdh.getEs2();
                 } else if (multChoice) {
                     //It's a response, so check which one it is
-                    if (code.toUpperCase().contains("A")) {
-                        returnArray[i] += fdh.getMcra1() + splitIn[1] + fdh.getMcra2();
+                    if (code.toUpperCase().contains("A") && !mcDone) {
+                        returnArray[i] += fdh.getMcra1() + rest + fdh.getMcra2();
                         if (code.contains("*")) {
                             correctMultChoice[0] = "Correct";
                         }
-                    } else if (code.toUpperCase().contains("B")) {
-                        returnArray[i] += fdh.getMcrb1() + splitIn[1] + fdh.getMcrb2();
+                    } else if (code.toUpperCase().contains("B") && !mcDone) {
+                        returnArray[i] += fdh.getMcrb1() + rest + fdh.getMcrb2();
                         if (code.contains("*")) {
                             correctMultChoice[1] = "Correct";
                         }
-                    } else if (code.toUpperCase().contains("C")) {
-                        returnArray[i] += fdh.getMcrc1() + splitIn[1] + fdh.getMcrc2();
+                    } else if (code.toUpperCase().contains("C") && !mcDone) {
+                        returnArray[i] += fdh.getMcrc1() + rest + fdh.getMcrc2();
                         if (code.contains("*")) {
                             correctMultChoice[2] = "Correct";
                         }
-                    } else if (code.toUpperCase().contains("D")) {
-                        returnArray[i] += fdh.getMcrd1() + splitIn[1] + fdh.getMcrd2();
+                    } else if (code.toUpperCase().contains("D") && !mcDone) {
+                        returnArray[i] += fdh.getMcrd1() + rest + fdh.getMcrd2();
                         if (code.contains("*")) {
                             correctMultChoice[3] = "Correct";
                         }
                         mcDone = true;
                     } else {
-                        throw new NumberFormatException("No matching multiple choice answer code found.");
+                        throw new NumberFormatException("No matching multiple choice answer code found in question #" + (i+1));
                     }
                 } else if (trueFalse) {
-                    //It can be ignored
-                    trueFalse = true;
+                    if (rest.toUpperCase().equals("TRUE") && !tfDone) {
+                        if (code.contains("*")) {
+                            correctTrueFalse[0] = "Correct";
+                        }
+                    } else if (rest.toUpperCase().equals("FALSE") && !tfDone) {
+                        if (code.contains("*")) {
+                            correctTrueFalse[1] = "Correct";
+                        }
+                        tfDone = true;
+                    } else {
+                        throw new NumberFormatException("No matching true false answer code found in question #" + (i+1));
+                    }
                 } else {
-                    throw new NumberFormatException("No matching question code found.");
+                    throw new NumberFormatException("No matching question code found for question #" + (i+1));
                 }
                 if (mcDone) {
-                    returnArray[i] += (fdh.getMc3() + fdh.getMcra3() + correctMultChoice[0] + fdh.getMcra4()
-                        + fdh.getMcrb3() + correctMultChoice[1] + fdh.getMcrb4() + fdh.getMcrc3()
-                        + correctMultChoice[2] + fdh.getMcrc4() + fdh.getMcrd3() + correctMultChoice[3]
-                        + fdh.getMcrd4() + fdh.getMc4());
+                    if (checkResponseArray(correctMultChoice)) {
+                        returnArray[i] += (fdh.getMc3() + fdh.getMcra3() + correctMultChoice[0] + fdh.getMcra4()
+                                + fdh.getMcrb3() + correctMultChoice[1] + fdh.getMcrb4() + fdh.getMcrc3()
+                                + correctMultChoice[2] + fdh.getMcrc4() + fdh.getMcrd3() + correctMultChoice[3]
+                                + fdh.getMcrd4() + fdh.getMc4());
+                    } else {
+                        throw new NumberFormatException("No correct answer provided for question #" + (i+1));
+                    }
+                }
+                if (tfDone) {
+                    if (checkResponseArray(correctTrueFalse)) {
+                        returnArray[i] += (fdh.getTfrt1() + correctTrueFalse[0] + fdh.getTfrt2()
+                                + fdh.getTfrf1() + correctTrueFalse[1] + fdh.getTfrf2());
+                    } else {
+                        throw new NumberFormatException("No correct answer provided for question #" + (i+1));
+                    }
                 }
             }
         }
         return returnArray;
+    }
+
+    /**
+     * Checks to see if the response array has been changed
+     * @param arr the array to check
+     * @return a boolean telling if the array has been changed
+     */
+    private boolean checkResponseArray(String[] arr) {
+        for (String str : arr) {
+            if (str.toUpperCase().equals("CORRECT")) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
