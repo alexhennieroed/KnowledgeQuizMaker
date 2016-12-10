@@ -1,0 +1,15 @@
+Test Quiz
+20161210
+20161211
+~
+MC#1. Multiple Choice
+a. correct
+b. correct
+c. correct
+*d. incorrect
+~
+TF#2. True False
+*a. True
+b. False
+~
+ES#3. Essay
