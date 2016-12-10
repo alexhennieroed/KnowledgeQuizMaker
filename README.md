@@ -20,3 +20,7 @@ MC - Multiple Choice,
 TF - True False,
 ES - Essay
 
+## Download Link for Program
+The executable JAR file can be downloaded from this link: [KnowledgeQuizMaker.jar] (https://github.com/alexhennieroed/KnowledgeQuizMaker/raw/master/KnowledgeQuizMaker.jar)
+
+Simply double click on the downloaded file to load the program.
